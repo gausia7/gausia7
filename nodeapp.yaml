@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodeapp
+  labels:
+    app: nodeapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodeapp
+  template:
+    metadata:
+      labels:
+        app: nodeapp
+    spec:
+      containers:
+      - name: nodeapp
+        image: gausia7/mynodeapp
+        ports:
+        - containerPort: 3000
+        env:
+        - name: MYSQL_DATABASE
+          value: test_db
+        - name: MYSQL_USER
+          value: dan              
+        - name: MYSQL_PASSWORD
+          value: secret
+        - name: MYSQL_ROOT_PASSWORD
+          value: secret
+        - name: DB_HOST
+          value: mysql-server-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeapp-service
+spec:
+  selector:
+    app: nodeapp
+  type: LoadBalancer  
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30001
